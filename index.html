@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>吉伊卡哇生词本 · 可爱粉嫩版</title>
+<style>
+  :root {
+    /* 吉伊卡哇粉嫩配色 */
+    --bg-start: #fff0f5;
+    --bg-end: #ffe0eb;
+    --primary: #ff9cb1;
+    --primary-dark: #e8748a;
+    --accent: #ffb7c5;
+    --text: #5c3a41;
+    --text-light: #8e6a73;
+    --white: #ffffff;
+    --gray-100: #fff5f7;
+    --gray-200: #ffdae2;
+    --radius: 24px;
+    --radius-sm: 16px;
+    --shadow: 0 8px 24px rgba(255, 154, 180, 0.2);
+    --shadow-lg: 0 12px 36px rgba(255, 154, 180, 0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(160deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    min-height: 100vh;
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 20px 12px 40px;
+  }
+  .app { width: 100%; max-width: 760px; }
+
+  /* ===== 顶部栏 ===== */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg, #ffb7c5, #ff8a9f);
+    color: #fff; padding: 14px 20px; border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); margin-bottom: 18px;
+    flex-wrap: wrap; gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .topbar::after {
+    content: '';
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+  }
+  .topbar .logo { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; z-index: 1; }
+  .topbar .logo span { font-size: 1.6rem; }
+  .user-area { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; z-index: 1; }
+  .user-area .badge {
+    background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .btn-sm {
+    background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.5);
+    color: #fff; padding: 5px 14px; border-radius: 20px; cursor: pointer;
+    font-size: 0.8rem; transition: 0.2s; font-family: inherit;
+  }
+  .btn-sm:hover { background: rgba(255,255,255,0.4); }
+
+  /* ===== 认证页 ===== */
+  .auth-card {
+    background: var(--white); border-radius: var(--radius); padding: 40px 32px;
+    box-shadow: var(--shadow-lg); max-width: 420px; margin: 60px auto;
+    border: 2px solid #ffe0eb;
+  }
+  .auth-card h1 { font-size: 1.5rem; color: var(--primary-dark); margin-bottom: 6px; text-align: center; }
+  .auth-card p.sub { color: var(--text-light); font-size: 0.88rem; margin-bottom: 24px; text-align: center; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--primary-dark); margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 12px 16px; border: 2px solid #ffdae2;
+    border-radius: 16px; font-size: 0.95rem; outline: none; transition: 0.2s;
+    background: var(--gray-100); font-family: inherit; color: var(--text);
+  }
+  .field input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(255, 156, 177, 0.15); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 24px; border-radius: 50px; font-size: 0.95rem; font-weight: 600;
+    border: none; cursor: pointer; transition: 0.2s; gap: 6px; font-family: inherit;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #ffb7c5, #ff8a9f);
+    color: #fff; box-shadow: 0 4px 14px rgba(255, 138, 159, 0.4);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 138, 159, 0.55); }
+  .btn-outline {
+    background: transparent; border: 2px solid #ffb7c5; color: var(--primary-dark);
+  }
+  .btn-outline:hover { background: #fff0f5; }
+  .auth-switch { text-align: center; margin-top: 18px; font-size: 0.85rem; color: var(--text-light); }
+  .auth-switch a { color: var(--primary-dark); font-weight: 600; cursor: pointer; text-decoration: underline; }
+  .msg { font-size: 0.82rem; margin-top: 10px; text-align: center; min-height: 1.2em; }
+  .msg.err { color: #d9534f; }
+  .msg.ok { color: #5cb85c; }
+
+  /* ===== 主界面 ===== */
+  .hidden { display: none !important; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center;
+    box-shadow: var(--shadow); border: 2px solid #ffe0eb;
+  }
+  .stat-card .num { font-size: 1.5rem; font-weight: 800; color: var(--primary-dark); line-height: 1.2; }
+  .stat-card .lbl { font-size: 0.72rem; color: var(--text-light); margin-top: 2px; }
+
+  .progress-wrap {
+    background: var(--white); border-radius: var(--radius); padding: 14px 18px;
+    box-shadow: var(--shadow); margin-bottom: 16px; border: 2px solid #ffe0eb;
+  }
+  .progress-head { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-light); margin-bottom: 8px; font-weight: 600; }
+  .bar { height: 12px; background: #ffdae2; border-radius: 12px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; border-radius: 12px;
+    background: linear-gradient(90deg, #ffb7c5, #ff8a9f);
+    width: 0%; transition: width 0.4s ease;
+  }
+
+  /* 单词卡片 */
+  .card-area { position: relative; }
+  .word-card {
+    background: var(--white); border-radius: var(--radius); padding: 30px 26px 26px;
+    box-shadow: var(--shadow-lg); border: 3px solid #ffd1dc;
+    min-height: 340px; display: flex; flex-direction: column;
+    position: relative;
+  }
+  /* 可爱的卡片装饰 */
+  .word-card::before {
+    content: '🧸';
+    position: absolute;
+    top: -15px; left: 20px;
+    font-size: 1.8rem;
+    background: var(--white);
+    padding: 0 8px;
+  }
+  .word-card::after {
+    content: '🌸';
+    position: absolute;
+    bottom: -15px; right: 20px;
+    font-size: 1.8rem;
+    background: var(--white);
+    padding: 0 8px;
+  }
+
+  .word-card .tag-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .tag {
+    font-size: 0.7rem; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+    background: #ffe0eb; color: var(--primary-dark); letter-spacing: 0.3px;
+  }
+  .tag.new { background: #e3f2fd; color: #1976d2; }
+  .tag.review { background: #fff3e0; color: #e65100; }
+
+  /* 单词文字 —— 支持遮罩 */
+  .word-main {
+    font-size: 2.1rem; font-weight: 800; color: var(--text);
+    letter-spacing: 0.5px; margin: 6px 0 4px; word-break: break-word;
+    transition: color 0.35s, text-shadow 0.35s;
+    text-align: center;
+  }
+  .word-main.masked {
+    color: transparent !important;
+    text-shadow: 0 0 22px rgba(255, 138, 159, 0.8);
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: none;
+    cursor: default;
+  }
+  .word-main.revealed {
+    color: var(--text) !important;
+    text-shadow: none;
+  }
+
+  .phonetic {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 1rem; color: var(--primary-dark); margin-bottom: 10px;
+    font-family: 'Lucida Sans Unicode', 'Arial Unicode MS', sans-serif;
+    min-height: 1.6em; transition: 0.3s;
+  }
+  .speak-btn {
+    background: #ffe0eb;
+    border: none;
+    color: var(--primary-dark);
+    font-size: 1.1rem;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .speak-btn:hover { background: #ffb7c5; color: #fff; transform: scale(1.1); }
+  .speak-btn:active { transform: scale(0.92); }
+
+  .meaning {
+    font-size: 1.05rem; color: var(--text); margin-bottom: 6px;
+    line-height: 1.5; min-height: 1.6em; transition: 0.3s;
+    text-align: center;
+  }
+  .example {
+    font-size: 0.88rem; color: var(--text-light); font-style: italic;
+    line-height: 1.5; margin-bottom: 14px;
+    padding-left: 12px; border-left: 4px solid #ffd1dc;
+    text-align: left;
+  }
+  .hidden-info { opacity: 0; transition: opacity 0.35s; }
+  .hidden-info.show { opacity: 1; }
+
+  .action-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: auto; }
+  .action-grid .btn { padding: 14px 6px; font-size: 0.88rem; border-radius: 50px; flex-direction: column; gap: 4px; }
+  .btn-know { background: linear-gradient(135deg, #a8e6cf, #7bc9a4); color: #fff; box-shadow: 0 4px 14px rgba(168, 230, 207, 0.4); }
+  .btn-know:hover { box-shadow: 0 6px 20px rgba(168, 230, 207, 0.6); transform: translateY(-2px); }
+  .btn-dont { background: linear-gradient(135deg, #ffb7c5, #ff8a9f); color: #fff; box-shadow: 0 4px 14px rgba(255, 138, 159, 0.4); }
+  .btn-dont:hover { box-shadow: 0 6px 20px rgba(255, 138, 159, 0.6); transform: translateY(-2px); }
+  .btn-easy { background: linear-gradient(135deg, #d4c4fb, #b8a3e8); color: #fff; box-shadow: 0 4px 14px rgba(184, 163, 232, 0.4); }
+  .btn-easy:hover { box-shadow: 0 6px 20px rgba(184, 163, 232, 0.6); transform: translateY(-2px); }
+
+  .action-grid .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+  /* ===== 拼写区 ===== */
+  .spell-area {
+    margin-top: 14px;
+    padding: 16px;
+    background: #fff0f5;
+    border-radius: var(--radius-sm);
+    border: 2px dashed #ffb7c5;
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .spell-label {
+    font-size: 0.85rem; font-weight: 700; color: var(--primary-dark);
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .spell-label .hint {
+    font-size: 0.74rem; font-weight: 500; color: var(--text-light);
+  }
+  .spell-row { display: flex; gap: 8px; }
+  .spell-row input {
+    flex: 1; padding: 12px 16px; border: 2px solid #ffdae2;
+    border-radius: 16px; font-size: 1rem; outline: none; transition: 0.2s;
+    background: #fff; font-family: inherit; color: var(--text);
+  }
+  .spell-row input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(255, 156, 177, 0.15); }
+  .spell-row .btn { padding: 12px 22px; white-space: nowrap; font-size: 0.9rem; }
+  .spell-msg { font-size: 0.82rem; margin-top: 8px; min-height: 1.2em; }
+  .spell-msg.ok { color: #7bc9a4; font-weight: 700; }
+  .spell-msg.err { color: #ff8a9f; font-weight: 700; }
+  .next-area { margin-top: 14px; animation: fadeIn 0.25s ease; }
+  .next-area .btn { width: 100%; padding: 14px; font-size: 0.95rem; }
+
+  /* 完成状态 */
+  .done-box {
+    text-align: center; padding: 50px 20px;
+    background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    border: 3px solid #ffd1dc;
+  }
+  .done-box .icon { font-size: 3.5rem; margin-bottom: 10px; }
+  .done-box h2 { color: var(--primary-dark); margin-bottom: 6px; font-size: 1.3rem; }
+  .done-box p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 18px; }
+
+  .review-banner {
+    background: linear-gradient(135deg, #fff8e1, #fff3e0);
+    border: 2px solid #ffe0b2; border-radius: var(--radius-sm); padding: 12px 18px;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+    font-size: 0.85rem; color: #8d6e00; box-shadow: var(--shadow);
+  }
+  .review-banner strong { color: #e65100; }
+
+  .history-panel {
+    background: var(--white); border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow); margin-top: 18px; border: 2px solid #ffe0eb;
+  }
+  .history-panel h3 { font-size: 1rem; color: var(--primary-dark); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .history-list { max-height: 300px; overflow-y: auto; }
+  .hist-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 12px; border-radius: 12px; font-size: 0.82rem;
+    border-bottom: 1px solid #ffe0eb;
+  }
+  .hist-item:last-child { border-bottom: none; }
+  .hist-item:nth-child(odd) { background: #fff5f7; }
+  .hist-word { font-weight: 700; color: var(--text); min-width: 110px; }
+  .hist-action { font-size: 0.78rem; padding: 3px 12px; border-radius: 20px; font-weight: 600; }
+  .ha-know { background: #e8f8f0; color: #5cb85c; }
+  .ha-dont { background: #fdecea; color: #d9534f; }
+  .ha-easy { background: #e3f2fd; color: #1976d2; }
+  .hist-time { color: var(--text-light); font-size: 0.72rem; }
+  .empty-hist { color: var(--text-light); font-size: 0.85rem; text-align: center; padding: 16px; }
+
+  @media (max-width: 520px) {
+    .word-main { font-size: 1.7rem; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .auth-card { padding: 28px 20px; margin: 30px auto; }
+    .action-grid .btn { font-size: 0.78rem; padding: 12px 4px; }
+    .topbar { padding: 12px 14px; }
+    .spell-row { flex-direction: column; }
+    .spell-row .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ==================== 认证界面 ==================== -->
+  <div id="authView">
+    <div class="auth-card">
+      <h1>🧸 吉伊卡哇生词本</h1>
+      <p class="sub">每天30词 · 软萌复习 · 艾宾浩斯曲线</p>
+
+      <div id="loginForm">
+        <div class="field">
+          <label>用户名</label>
+          <input id="loginUser" type="text" placeholder="输入用户名" autocomplete="username">
+        </div>
+        <div class="field">
+          <label>密码</label>
+          <input id="loginPass" type="password" placeholder="输入密码" autocomplete="current-password">
+        </div>
+        <div class="msg" id="loginMsg"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="doLogin()">登 录</button>
+        <div class="auth-switch">还没有账号？<a onclick="showRegister()">立即注册</a></div>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <div class="field">
+          <label>用户名</label>
+          <input id="regUser" type="text" placeholder="设置用户名（至少2位）" autocomplete="username">
+        </div>
+        <div class="field">
+          <label>密码</label>
+          <input id="regPass" type="password" placeholder="设置密码（至少4位）" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label>确认密码</label>
+          <input id="regPass2" type="password" placeholder="再次输入密码" autocomplete="new-password">
+        </div>
+        <div class="msg" id="regMsg"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:6px" onclick="doRegister()">注 册</button>
+        <div class="auth-switch">已有账号？<a onclick="showLogin()">返回登录</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 主界面 ==================== -->
+  <div id="mainView" class="hidden">
+    <div class="topbar">
+      <div class="logo"><span>🧸</span> 吉伊卡哇生词本</div>
+      <div class="user-area">
+        <span class="badge" id="userBadge">用户</span>
+        <button class="btn-sm" onclick="logout()">退出</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">总词数</div></div>
+      <div class="stat-card"><div class="num" id="statKnown">0</div><div class="lbl">认识</div></div>
+      <div class="stat-card"><div class="num" id="statUnknown">0</div><div class="lbl">不认识</div></div>
+      <div class="stat-card"><div class="num" id="statEasy">0</div><div class="lbl">很简单</div></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-head">
+        <span>今日进度</span>
+        <span id="progressText">0 / 30</span>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+    </div>
+
+    <div id="reviewBanner" class="review-banner hidden">
+      <span>🌸</span>
+      <span>今天有 <strong id="reviewCount">0</strong> 个单词需要复习（艾宾浩斯曲线）</span>
+    </div>
+
+    <div class="card-area" id="cardArea">
+      <div class="word-card" id="wordCard">
+        <div class="tag-row">
+          <span class="tag" id="cardTag">NEW</span>
+          <span style="font-size:0.78rem;color:var(--text-light)" id="cardCounter">1 / 30</span>
+        </div>
+
+        <!-- 单词（会被遮罩） -->
+        <div class="word-main" id="wordText">word</div>
+
+        <!-- 音标 + 朗读按钮 -->
+        <div class="phonetic hidden-info" id="wordPhonetic">
+          <span id="phoneticText">/wɜːd/</span>
+          <button class="speak-btn" id="speakBtn" onclick="speakWord()" title="听发音">🔊</button>
+        </div>
+
+        <div class="meaning hidden-info" id="wordMeaning">中文释义</div>
+        <div class="example hidden-info" id="wordExample">Example sentence.</div>
+
+        <div class="action-grid" id="actionGrid">
+          <button class="btn btn-know" id="btnKnow" onclick="handleAction('know')">✅ 认识</button>
+          <button class="btn btn-dont" id="btnDont" onclick="handleAction('dont')">❌ 不认识</button>
+          <button class="btn btn-easy" id="btnEasy" onclick="handleAction('easy')">💙 很简单</button>
+        </div>
+
+        <!-- 拼写区（认识/不认识时出现） -->
+        <div class="spell-area hidden" id="spellArea">
+          <div class="spell-label">
+            ✍️ 请拼写这个单词
+            <span class="hint">（单词已被遮住，可点 🔊 重听）</span>
+          </div>
+          <div class="spell-row">
+            <input id="spellInput" type="text" placeholder="输入英文拼写" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+            <button class="btn btn-primary" id="spellSubmit" onclick="submitSpelling()">提交</button>
+          </div>
+          <div class="spell-msg" id="spellMsg"></div>
+        </div>
+
+        <!-- 很简单：直接下一个 -->
+        <div class="next-area hidden" id="nextArea">
+          <button class="btn btn-primary" onclick="goNext()">下一个 →</button>
+        </div>
+      </div>
+
+      <div class="done-box hidden" id="doneBox">
+        <div class="icon">🎉</div>
+        <h2>今日任务完成！</h2>
+        <p id="doneSummary">你已学习完今天的30个单词</p>
+        <button class="btn btn-primary" onclick="resetToday()">再学一轮</button>
+      </div>
+    </div>
+
+    <div class="history-panel">
+      <h3>📋 学习历史</h3>
+      <div class="history-list" id="historyList">
+        <div class="empty-hist">暂无记录，开始学习吧</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   词库 —— BBC News 经典词汇 + 福尔摩斯小姐生词
+   ============================================================ */
+const BBC_VOCAB = [
+  // ===== BBC News 经典词汇 =====
+  { word:"carry out", phonetic:"/ˈkæri aʊt/", meaning:"执行，进行（调查、攻击、手术等）", example:"The police carried out a thorough investigation." },
+  { word:"step down", phonetic:"/step daʊn/", meaning:"辞职，下台", example:"The CEO stepped down after the scandal." },
+  { word:"call for", phonetic:"/kɔːl fɔː/", meaning:"呼吁，要求", example:"Campaigners called for an immediate ban." },
+  { word:"crack down", phonetic:"/kræk daʊn/", meaning:"严厉打击，取缔（常与 on 连用）", example:"Police cracked down on illegal protests." },
+  { word:"roll out", phonetic:"/rəʊl aʊt/", meaning:"推出，逐步实施", example:"The government rolled out the new scheme." },
+  { word:"look into", phonetic:"/lʊk ˈɪntuː/", meaning:"调查，研究", example:"Officials are looking into the claims." },
+  { word:"rule out", phonetic:"/ruːl aʊt/", meaning:"排除（可能性）", example:"Police have not ruled out arson." },
+  { word:"set out", phonetic:"/set aʊt/", meaning:"阐述，提出（计划）；动身", example:"The minister set out the new plan." },
+  { word:"step up", phonetic:"/step ʌp/", meaning:"加强，加大（力度）", example:"The army stepped up its offensive." },
+  { word:"turn out", phonetic:"/tɜːn aʊt/", meaning:"结果是，原来是", example:"It turned out to be a false alarm." },
+  { word:"hand over", phonetic:"/hænd ˈəʊvə/", meaning:"移交，交出", example:"Suspects were handed over to police." },
+  { word:"draw up", phonetic:"/drɔː ʌp/", meaning:"拟定，草拟", example:"Lawyers drew up the agreement." },
+  { word:"in the wake of", phonetic:"/ɪn ðə weɪk ɒv/", meaning:"在…之后（尤指作为后果）", example:"In the wake of the scandal, he resigned." },
+  { word:"come under fire", phonetic:"/kʌm ˈʌndə ˈfaɪə/", meaning:"遭到抨击", example:"The policy has come under fire." },
+  { word:"at odds", phonetic:"/æt ɒdz/", meaning:"与…不合，相左", example:"The two ministers are at odds." },
+  { word:"in the pipeline", phonetic:"/ɪn ðə ˈpaɪplaɪn/", meaning:"在筹备中，在进行中", example:"More reforms are in the pipeline." },
+  { word:"U-turn", phonetic:"/ˈjuː tɜːn/", meaning:"政策大转弯", example:"The government made a U-turn on tax." },
+  { word:"spark", phonetic:"/spɑːk/", meaning:"引发（比 cause 更生动）", example:"The remarks sparked outrage." },
+  { word:"grapple with", phonetic:"/ˈɡræpl wɪð/", meaning:"费力应对，苦于", example:"The city is grappling with flooding." },
+  { word:"emblematic", phonetic:"/ˌembləˈmætɪk/", meaning:"象征的，标志性的", example:"A sword is emblematic of power." },
+  { word:"precarious", phonetic:"/prɪˈkeəriəs/", meaning:"危险的，不牢靠的", example:"The lorry was in a precarious position." },
+  { word:"volatile", phonetic:"/ˈvɒlətaɪl/", meaning:"不稳定的，易变的", example:"Food prices are very volatile in war." },
+  { word:"ceasefire", phonetic:"/ˈsiːsfaɪə/", meaning:"停火协定", example:"Both sides declared a ceasefire." },
+  { word:"mobilize", phonetic:"/ˈməʊbəlaɪz/", meaning:"组织，动员", example:"They tried to mobilize voter support." },
+  { word:"embolden", phonetic:"/ɪmˈbəʊldən/", meaning:"使有胆量", example:"Emboldened by drink, he spoke up." },
+  { word:"uproar", phonetic:"/ˈʌprɔː/", meaning:"喧嚣，轩然大波", example:"The book caused an uproar in France." },
+  { word:"accuse", phonetic:"/əˈkjuːz/", meaning:"指控，指责", example:"He was accused of robbery." },
+  { word:"rival", phonetic:"/ˈraɪvl/", meaning:"可与…相媲美，比得上", example:"No computer can rival a human brain." },
+  { word:"presumably", phonetic:"/prɪˈzjuːməbli/", meaning:"据推测，大概", example:"Presumably he forgot to send the letter." },
+  { word:"usher in", phonetic:"/ˈʌʃə ɪn/", meaning:"开启，迎来（新时代）", example:"The treaty ushered in a new era." },
+  { word:"secession", phonetic:"/sɪˈseʃn/", meaning:"（政治上的）分离，独立", example:"The secession from Serbia was opposed." },
+  { word:"commitment", phonetic:"/kəˈmɪtmənt/", meaning:"承诺，投入", example:"The government reaffirmed its commitment." },
+  { word:"significant", phonetic:"/sɪɡˈnɪfɪkənt/", meaning:"重大的，显著的", example:"There has been a significant improvement." },
+  { word:"sustainable", phonetic:"/səˈsteɪnəbl/", meaning:"可持续的", example:"We need sustainable solutions." },
+  { word:"dramatically", phonetic:"/drəˈmætɪkli/", meaning:"剧烈地，显著地", example:"Prices fell dramatically." },
+  { word:"manufacturer", phonetic:"/ˌmænjuˈfæktʃərə/", meaning:"制造商", example:"The manufacturer recalled the product." },
+  { word:"loneliness", phonetic:"/ˈləʊnlinəs/", meaning:"孤独，寂寞", example:"Social media can increase loneliness." },
+  { word:"self-esteem", phonetic:"/ˌself ɪˈstiːm/", meaning:"自尊心", example:"The program boosted her self-esteem." },
+  { word:"dismissed", phonetic:"/dɪsˈmɪst/", meaning:"被驳回的，被解雇的", example:"The claim was dismissed by the court." },
+  { word:"aware", phonetic:"/əˈweə/", meaning:"意识到的，知道的", example:"Are you aware of the risks?" },
+
+  // ===== 福尔摩斯小姐 (Enola Holmes) 生词 =====
+  { word:"embroidery", phonetic:"/ɪmˈbrɔɪdəri/", meaning:"刺绣，刺绣品", example:"She was skilled at embroidery and needlework." },
+  { word:"virtuoso", phonetic:"/ˌvɜːtʃuˈəʊzəʊ/", meaning:"鉴赏家；艺术大师", example:"He was a virtuoso of the violin." },
+  { word:"pugilist", phonetic:"/ˈpjuːdʒɪlɪst/", meaning:"拳击家，拳师", example:"The pugilist trained hard for the match." },
+  { word:"deductive", phonetic:"/dɪˈdʌktɪv/", meaning:"演绎的，推理的", example:"She used deductive reasoning to solve the mystery." },
+  { word:"misanthrope", phonetic:"/ˈmɪzənθrəʊp/", meaning:"厌恶人类者，愤世嫉俗者", example:"The misanthrope preferred to live alone in the countryside." },
+  { word:"cipher", phonetic:"/ˈsaɪfə/", meaning:"密码，暗号", example:"The detective cracked the cipher in the letter." },
+  { word:"chrysanthemum", phonetic:"/krɪˈsænθəməm/", meaning:"菊花", example:"The garden was full of chrysanthemums in autumn." },
+  { word:"mettle", phonetic:"/ˈmetl/", meaning:"勇气，毅力", example:"She showed her mettle during the difficult investigation." },
+  { word:"repression", phonetic:"/rɪˈpreʃn/", meaning:"压制，压抑", example:"The government's repression of dissent sparked protests." },
+  { word:"marksman", phonetic:"/ˈmɑːksmən/", meaning:"神射手，射手", example:"He was a skilled marksman with the bow." },
+  { word:"nincompoop", phonetic:"/ˈnɪnkəmpuːp/", meaning:"笨蛋，傻瓜", example:"Don't be such a nincompoop!" },
+  { word:"preposterous", phonetic:"/prɪˈpɒstərəs/", meaning:"荒谬的，愚蠢的", example:"These claims are absolutely preposterous!" },
+  { word:"nuisance", phonetic:"/ˈnjuːsns/", meaning:"讨厌的人或事，麻烦", example:"I don't want to be a nuisance, but may I ask a question?" },
+  { word:"timid", phonetic:"/ˈtɪmɪd/", meaning:"胆小的，羞怯的", example:"He stopped in the doorway, too timid to go in." },
+  { word:"vanish", phonetic:"/ˈvænɪʃ/", meaning:"消失，突然不见", example:"He turned around and vanished into the house." },
+  { word:"afoot", phonetic:"/əˈfʊt/", meaning:"在进行中的，酝酿中的", example:"Changes were afoot in the old town." },
+  { word:"disguise", phonetic:"/dɪsˈɡaɪz/", meaning:"伪装，掩饰", example:"She was cleverly disguised as a policewoman." },
+  { word:"paraphernalia", phonetic:"/ˌpærəfəˈneɪliə/", meaning:"个人 belongings，随身物品", example:"He gathered his paraphernalia and left." },
+  { word:"covert", phonetic:"/ˈkʌvət/", meaning:"隐蔽的，暗中的", example:"The operation was covert and highly secret." },
+  { word:"slovenly", phonetic:"/ˈslʌvnli/", meaning:"不整洁的，邋遢的", example:"His slovenly appearance shocked the visitors." },
+  { word:"subterfuge", phonetic:"/ˈsʌbtəfjuːdʒ/", meaning:"托辞，借口；诡计", example:"She used subterfuge to escape the guards." },
+  { word:"ferocity", phonetic:"/fəˈrɒsəti/", meaning:"凶猛，激烈", example:"The ferocity of the storm surprised everyone." },
+  { word:"zest", phonetic:"/zest/", meaning:"热情，兴致", example:"She approached the case with great zest." },
+  { word:"nobby", phonetic:"/ˈnɒbi/", meaning:"时髦的，漂亮的", example:"That's a very nobby hat you're wearing." },
+  { word:"flummox", phonetic:"/ˈflʌməks/", meaning:"使困惑，使慌张", example:"The question completely flummoxed him." },
+  { word:"bewilder", phonetic:"/bɪˈwɪldə/", meaning:"使迷惑，使不知所措", example:"The instructions bewildered the new students." },
+  { word:"eligible", phonetic:"/ˈelɪdʒəbl/", meaning:"有资格的，符合条件的", example:"She is eligible for the scholarship." },
+  { word:"perpetual", phonetic:"/pəˈpetʃuəl/", meaning:"永久的，不断的", example:"The perpetual noise from the street annoyed her." },
+  { word:"infuriate", phonetic:"/ɪnˈfjʊərieɪt/", meaning:"使大怒，激怒", example:"His careless attitude infuriated his colleagues." },
+  { word:"humility", phonetic:"/hjuːˈmɪləti/", meaning:"谦逊，谦虚", example:"He needs the humility to admit his mistakes." },
+];
+
+/* ============================================================
+   常量
+   ============================================================ */
+const DAILY_COUNT = 30;
+const LS_USERS = 'bbcv_users';
+const LS_SESSION = 'bbcv_session';
+const LS_PREFIX = 'bbcv_data_';
+
+/* ============================================================
+   状态变量
+   ============================================================ */
+let pendingAction = null;
+let pendingWord = null;
+
+/* ============================================================
+   工具函数
+   ============================================================ */
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function nowTimeStr() {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function lsGet(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; }
+  catch(e) { return def; }
+}
+function lsSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+function normalizeSpell(s) {
+  return String(s).trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+/* ============================================================
+   AI 语音朗读（浏览器语音合成）
+   ============================================================ */
+function speakWord() {
+  if (!('speechSynthesis' in window)) {
+    console.warn('当前浏览器不支持语音合成');
+    return;
+  }
+  const word = pendingWord || currentCardWord;
+  if (!word) return;
+
+  const synth = window.speechSynthesis;
+  try { synth.cancel(); } catch(e) {}
+
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = 'en-GB';
+  u.rate = 0.85;
+  u.pitch = 1.0;
+  u.volume = 1.0;
+
+  try {
+    const voices = synth.getVoices();
+    let voice = voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB');
+    if (!voice) voice = voices.find(v => v.lang === 'en-US' || v.lang === 'en_US');
+    if (!voice) voice = voices.find(v => v.lang && v.lang.toLowerCase().indexOf('en') === 0);
+    if (voice) u.voice = voice;
+  } catch(e) {}
+
+  synth.speak(u);
+}
+
+/* ============================================================
+   用户系统
+   ============================================================ */
+function getUsers() { return lsGet(LS_USERS, {}); }
+function saveUsers(u) { lsSet(LS_USERS, u); }
+
+function showRegister() {
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerForm').classList.remove('hidden');
+  document.getElementById('loginMsg').textContent = '';
+  document.getElementById('regMsg').textContent = '';
+}
+function showLogin() {
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('loginMsg').textContent = '';
+  document.getElementById('regMsg').textContent = '';
+}
+
+function doRegister() {
+  const user = document.getElementById('regUser').value.trim();
+  const p1 = document.getElementById('regPass').value;
+  const p2 = document.getElementById('regPass2').value;
+  const msg = document.getElementById('regMsg');
+
+  if (user.length < 2) { msg.className='msg err'; msg.textContent='用户名至少2位'; return; }
+  if (p1.length < 4) { msg.className='msg err'; msg.textContent='密码至少4位'; return; }
+  if (p1 !== p2) { msg.className='msg err'; msg.textContent='两次密码不一致'; return; }
+
+  const users = getUsers();
+  if (users[user]) { msg.className='msg err'; msg.textContent='用户名已存在'; return; }
+
+  users[user] = { pass: p1, created: Date.now() };
+  saveUsers(users);
+
+  const dataKey = LS_PREFIX + user;
+  if (!localStorage.getItem(dataKey)) {
+    lsSet(dataKey, createEmptyData());
+  }
+
+  msg.className='msg ok'; msg.textContent='注册成功！正在自动登录…';
+  setTimeout(() => { loginAs(user); }, 500);
+}
+
+function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMsg');
+
+  const users = getUsers();
+  if (!users[user]) { msg.className='msg err'; msg.textContent='用户不存在，请先注册'; return; }
+  if (users[user].pass !== pass) { msg.className='msg err'; msg.textContent='密码错误'; return; }
+
+  loginAs(user);
+}
+
+function loginAs(user) {
+  lsSet(LS_SESSION, user);
+  document.getElementById('authView').classList.add('hidden');
+  document.getElementById('mainView').classList.remove('hidden');
+  document.getElementById('userBadge').textContent = '🧸 ' + user;
+  document.getElementById('loginMsg').textContent = '';
+  document.getElementById('regMsg').textContent = '';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('regUser').value = '';
+  document.getElementById('regPass').value = '';
+  document.getElementById('regPass2').value = '';
+  initUserData(user);
+  renderAll();
+}
+
+function logout() {
+  lsSet(LS_SESSION, null);
+  document.getElementById('mainView').classList.add('hidden');
+  document.getElementById('authView').classList.remove('hidden');
+  showLogin();
+}
+
+function getCurrentUser() {
+  const u = lsGet(LS_SESSION, null);
+  return (u && getUsers()[u]) ? u : null;
+}
+
+/* ============================================================
+   用户数据结构
+   ============================================================ */
+function createEmptyData() {
+  return {
+    todayDate: '',
+    todayQueue: [],
+    todayIndex: 0,
+    todayDone: false,
+    records: [],
+    schedule: {},
+    wordAction: {},
+    dontPassCount: {}
+  };
+}
+
+function initUserData(user) {
+  const key = LS_PREFIX + user;
+  let data = lsGet(key, null);
+  if (!data) { data = createEmptyData(); lsSet(key, data); }
+
+  const today = todayStr();
+  if (data.todayDate !== today) {
+    data.todayDate = today;
+    data.todayQueue = buildDailyQueue(data);
+    data.todayIndex = 0;
+    data.todayDone = false;
+    lsSet(key, data);
+  }
+  if (!data.todayDone && data.todayQueue.length === 0) {
+    data.todayQueue = buildDailyQueue(data);
+    data.todayIndex = 0;
+    lsSet(key, data);
+  }
+  return data;
+}
+
+function getUserData() {
+  const user = getCurrentUser();
+  if (!user) return null;
+  return lsGet(LS_PREFIX + user, createEmptyData());
+}
+
+function saveUserData(data) {
+  const user = getCurrentUser();
+  if (!user) return;
+  lsSet(LS_PREFIX + user, data);
+}
+
+/* ============================================================
+   队列构建
+   ============================================================ */
+function buildDailyQueue(data) {
+  const today = todayStr();
+  const queue = [];
+
+  const dueWords = [];
+  for (const w in data.schedule) {
+    const s = data.schedule[w];
+    if (s && s.nextReview && s.nextReview <= today) {
+      if (BBC_VOCAB.some(v => v.word === w)) dueWords.push(w);
+    }
+  }
+  shuffle(dueWords).forEach(w => queue.push(w));
+
+  const allWords = BBC_VOCAB.map(v => v.word);
+  const learned = Object.keys(data.wordAction || {});
+  const newWords = allWords.filter(w => !learned.includes(w));
+  shuffle(newWords).forEach(w => {
+    if (queue.length < DAILY_COUNT) queue.push(w);
+  });
+
+  if (queue.length < DAILY_COUNT) {
+    const remaining = allWords.filter(w => !queue.includes(w));
+    shuffle(remaining).forEach(w => {
+      if (queue.length < DAILY_COUNT) queue.push(w);
+    });
+  }
+
+  return queue.slice(0, DAILY_COUNT);
+}
+
+/* ============================================================
+   艾宾浩斯复习间隔
+   ============================================================ */
+const EBBINGHAUS_INTERVALS = [1, 2, 4, 7, 15, 30, 60];
+
+function getNextReviewDate(intervalDays) {
+  const d = new Date();
+  d.setDate(d.getDate() + intervalDays);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+/* ============================================================
+   渲染逻辑
+   ============================================================ */
+let currentCardWord = null;
+
+function renderAll() {
+  const data = getUserData();
+  if (!data) return;
+
+  if (!data.todayDone && data.todayQueue.length === 0) {
+    data.todayQueue = buildDailyQueue(data);
+    data.todayIndex = 0;
+    saveUserData(data);
+  }
+
+  renderStats(data);
+  renderProgress(data);
+  renderReviewBanner(data);
+  renderCard(data);
+  renderHistory(data);
+}
+
+function renderStats(data) {
+  const total = BBC_VOCAB.length;
+  let known = 0, unknown = 0, easy = 0;
+  for (const w in data.wordAction) {
+    if (data.wordAction[w] === 'know') known++;
+    else if (data.wordAction[w] === 'dont') unknown++;
+    else if (data.wordAction[w] === 'easy') easy++;
+  }
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statKnown').textContent = known;
+  document.getElementById('statUnknown').textContent = unknown;
+  document.getElementById('statEasy').textContent = easy;
+}
+
+function renderProgress(data) {
+  const total = data.todayQueue.length || DAILY_COUNT;
+  const idx = data.todayDone ? total : Math.min(data.todayIndex, total);
+  document.getElementById('progressText').textContent = idx + ' / ' + total;
+  document.getElementById('barFill').style.width = (total > 0 ? (idx / total * 100) : 0) + '%';
+}
+
+function renderReviewBanner(data) {
+  const today = todayStr();
+  let count = 0;
+  for (const w in data.schedule) {
+    const s = data.schedule[w];
+    if (s && s.nextReview && s.nextReview <= today) count++;
+  }
+  const banner = document.getElementById('reviewBanner');
+  if (count > 0) {
+    banner.classList.remove('hidden');
+    document.getElementById('reviewCount').textContent = count;
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+
+function resetCardInteraction() {
+  pendingAction = null;
+  pendingWord = null;
+  document.getElementById('spellArea').classList.add('hidden');
+  document.getElementById('nextArea').classList.add('hidden');
+  document.getElementById('spellMsg').textContent = '';
+  document.getElementById('spellInput').value = '';
+  document.getElementById('spellSubmit').disabled = false;
+  document.getElementById('btnKnow').disabled = false;
+  document.getElementById('btnDont').disabled = false;
+  document.getElementById('btnEasy').disabled = false;
+  const wt = document.getElementById('wordText');
+  wt.classList.remove('masked');
+  wt.classList.remove('revealed');
+}
+
+function renderCard(data) {
+  const card = document.getElementById('wordCard');
+  const doneBox = document.getElementById('doneBox');
+
+  if (data.todayDone || data.todayIndex >= data.todayQueue.length) {
+    card.classList.add('hidden');
+    doneBox.classList.remove('hidden');
+    document.getElementById('doneSummary').textContent =
+      '你今天完成了 ' + data.todayQueue.length + ' 个单词的学习';
+    return;
+  }
+
+  card.classList.remove('hidden');
+  doneBox.classList.add('hidden');
+
+  resetCardInteraction();
+
+  const word = data.todayQueue[data.todayIndex];
+  currentCardWord = word;
+  const vocab = BBC_VOCAB.find(v => v.word === word) || { word: word, phonetic: '', meaning: '', example: '' };
+
+  const tag = document.getElementById('cardTag');
+  const isReview = data.schedule[word] && data.wordAction[word];
+  if (isReview) {
+    tag.textContent = '复习';
+    tag.className = 'tag review';
+  } else {
+    tag.textContent = '新词';
+    tag.className = 'tag new';
+  }
+
+  document.getElementById('cardCounter').textContent =
+    (data.todayIndex + 1) + ' / ' + data.todayQueue.length;
+
+  document.getElementById('wordText').textContent = vocab.word;
+
+  ['wordPhonetic', 'wordMeaning', 'wordExample'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  document.getElementById('phoneticText').textContent = vocab.phonetic || '';
+  document.getElementById('wordMeaning').textContent = vocab.meaning || '';
+  document.getElementById('wordExample').textContent = vocab.example || '';
+}
+
+function renderHistory(data) {
+  const list = document.getElementById('historyList');
+  const records = (data.records || []).slice().reverse().slice(0, 50);
+  if (records.length === 0) {
+    list.innerHTML = '<div class="empty-hist">暂无记录，开始学习吧</div>';
+    return;
+  }
+  list.innerHTML = records.map(r => {
+    const actionClass = r.action === 'know' ? 'ha-know' : (r.action === 'dont' ? 'ha-dont' : 'ha-easy');
+    const actionText = r.action === 'know' ? '认识' : (r.action === 'dont' ? '不认识' : '很简单');
+    return '<div class="hist-item">' +
+      '<span class="hist-word">' + escapeHtml(r.word) + '</span>' +
+      '<span class="hist-action ' + actionClass + '">' + actionText + '</span>' +
+      '<span class="hist-time">' + (r.date || '') + ' ' + (r.time || '') + '</span>' +
+      '</div>';
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function(c) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+/* ============================================================
+   用户操作
+   ============================================================ */
+function handleAction(action) {
+  const data = getUserData();
+  if (!data || data.todayDone) return;
+  if (pendingAction) return;
+
+  const word = data.todayQueue[data.todayIndex];
+  if (!word) return;
+
+  pendingAction = action;
+  pendingWord = word;
+
+  document.getElementById('wordPhonetic').classList.add('show');
+  document.getElementById('wordMeaning').classList.add('show');
+  document.getElementById('wordExample').classList.add('show');
+
+  document.getElementById('btnKnow').disabled = true;
+  document.getElementById('btnDont').disabled = true;
+  document.getElementById('btnEasy').disabled = true;
+
+  if (action === 'know' || action === 'dont') {
+    document.getElementById('wordText').classList.add('masked');
+    document.getElementById('wordText').classList.remove('revealed');
+    document.getElementById('spellArea').classList.remove('hidden');
+    document.getElementById('nextArea').classList.add('hidden');
+    document.getElementById('spellInput').value = '';
+    document.getElementById('spellMsg').textContent = '';
+    speakWord();
+    setTimeout(() => document.getElementById('spellInput').focus(), 100);
+  } else {
+    document.getElementById('spellArea').classList.add('hidden');
+    document.getElementById('nextArea').classList.remove('hidden');
+    speakWord();
+  }
+}
+
+function submitSpelling() {
+  if (!pendingAction || !pendingWord) return;
+  const raw = document.getElementById('spellInput').value;
+  const input = normalizeSpell(raw);
+  const target = normalizeSpell(pendingWord);
+  const msg = document.getElementById('spellMsg');
+
+  if (input === target) {
+    msg.className = 'spell-msg ok';
+    msg.textContent = '✓ 拼写正确！';
+    document.getElementById('spellSubmit').disabled = true;
+
+    const wt = document.getElementById('wordText');
+    wt.classList.remove('masked');
+    wt.classList.add('revealed');
+
+    setTimeout(() => {
+      finalizeAction();
+    }, 900);
+  } else {
+    msg.className = 'spell-msg err';
+    msg.textContent = '✗ 拼写有误，请再试一次（可点 🔊 重听）';
+    document.getElementById('spellInput').value = '';
+    document.getElementById('spellInput').focus();
+  }
+}
+
+function goNext() {
+  if (pendingAction === 'easy') {
+    finalizeAction();
+  }
+}
+
+function finalizeAction() {
+  const data = getUserData();
+  if (!data) return;
+  const word = pendingWord;
+  const action = pendingAction;
+  if (!word || !action) return;
+
+  const today = todayStr();
+
+  data.records = data.records || [];
+  data.records.push({ word, action, time: nowTimeStr(), date: today });
+  if (data.records.length > 500) data.records = data.records.slice(-500);
+
+  if (action === 'easy') {
+    data.wordAction[word] = 'easy';
+    data.schedule[word] = null;
+    data.dontPassCount[word] = 0;
+    saveUserData(data);
+    pendingAction = null;
+    pendingWord = null;
+    advanceCard(data);
+
+  } else if (action === 'know') {
+    const prevAction = data.wordAction[word];
+    if (prevAction === 'dont') {
+      const cnt = (data.dontPassCount[word] || 0) + 1;
+      data.dontPassCount[word] = cnt;
+      if (cnt >= 2) {
+        data.wordAction[word] = 'know';
+        scheduleReview(data, word);
+        data.dontPassCount[word] = 0;
+        saveUserData(data);
+        pendingAction = null;
+        pendingWord = null;
+        advanceCard(data);
+      } else {
+        data.todayQueue.push(data.todayQueue.splice(data.todayIndex, 1)[0]);
+        saveUserData(data);
+        pendingAction = null;
+        pendingWord = null;
+        renderAll();
+      }
+    } else {
+      data.wordAction[word] = 'know';
+      scheduleReview(data, word);
+      data.dontPassCount[word] = 0;
+      saveUserData(data);
+      pendingAction = null;
+      pendingWord = null;
+      advanceCard(data);
+    }
+
+  } else if (action === 'dont') {
+    data.wordAction[word] = 'dont';
+    data.schedule[word] = null;
+    data.dontPassCount[word] = 0;
+    data.todayQueue.push(data.todayQueue.splice(data.todayIndex, 1)[0]);
+    saveUserData(data);
+    pendingAction = null;
+    pendingWord = null;
+    renderAll();
+  }
+}
+
+function scheduleReview(data, word) {
+  const intervals = EBBINGHAUS_INTERVALS;
+  let step = 0;
+  if (data.schedule[word] && data.schedule[word].interval) {
+    const prev = data.schedule[word].interval;
+    const idx = intervals.indexOf(prev);
+    if (idx >= 0 && idx < intervals.length - 1) step = idx + 1;
+    else step = intervals.length - 1;
+  }
+  const interval = intervals[step] || 1;
+  data.schedule[word] = {
+    nextReview: getNextReviewDate(interval),
+    interval: interval
+  };
+}
+
+function advanceCard(data) {
+  data.todayIndex++;
+  if (data.todayIndex >= data.todayQueue.length) {
+    data.todayDone = true;
+  }
+  saveUserData(data);
+  renderAll();
+}
+
+function resetToday() {
+  const data = getUserData();
+  if (!data) return;
+  data.todayDate = todayStr();
+  data.todayQueue = buildDailyQueue(data);
+  data.todayIndex = 0;
+  data.todayDone = false;
+  saveUserData(data);
+  renderAll();
+}
+
+/* ============================================================
+   启动
+   ============================================================ */
+(function init() {
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.getVoices(); } catch(e) {}
+  }
+
+  document.getElementById('spellInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitSpelling();
+    }
+  });
+
+  const user = getCurrentUser();
+  if (user) {
+    document.getElementById('authView').classList.add('hidden');
+    document.getElementById('mainView').classList.remove('hidden');
+    document.getElementById('userBadge').textContent = '🧸 ' + user;
+    initUserData(user);
+    renderAll();
+  } else {
+    document.getElementById('authView').classList.remove('hidden');
+    document.getElementById('mainView').classList.add('hidden');
+  }
+})();
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    if (!document.getElementById('loginForm').classList.contains('hidden')) {
+      if (document.activeElement && (document.activeElement.id === 'loginUser' || document.activeElement.id === 'loginPass')) {
+        doLogin();
+      }
+    }
+    if (!document.getElementById('registerForm').classList.contains('hidden')) {
+      if (document.activeElement && ['regUser','regPass','regPass2'].includes(document.activeElement.id)) {
+        doRegister();
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
